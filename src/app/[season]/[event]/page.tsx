@@ -68,6 +68,14 @@ function setPosition(data: EventResult[]) {
 function ResultsTable({ data }: { data: EventResult[] }) {
   const tableData = setPosition(data);
 
+  if (!tableData.length) {
+    return (
+      <p>
+        <i>No results</i>
+      </p>
+    );
+  }
+
   return (
     <table>
       <thead>

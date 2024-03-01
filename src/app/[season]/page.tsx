@@ -31,6 +31,14 @@ export default async function Page({ params }: PageParams) {
     data: DriverScore[];
     context?: "sealed" | "unsealed";
   }) {
+    if (!data.length) {
+      return (
+        <p>
+          <i>No results</i>
+        </p>
+      );
+    }
+
     const sortedData = context
       ? (data.sort(
           (a, b) => b.totals[context] - a.totals[context]
