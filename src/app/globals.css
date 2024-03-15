@@ -13,14 +13,22 @@ body {
 table {
   border-collapse: collapse;
 }
-
 th,
 td {
   text-align: center;
   border: 1px solid;
   padding: 4px 8px;
 }
-
 tr:nth-child(even) {
   background-color: #f0f0f0;
+}
+
+a {
+  color: #ea2127;
+  text-decoration: none;
+}
+a:hover,
+a:focus,
+a:active {
+  color: #303030;
 }

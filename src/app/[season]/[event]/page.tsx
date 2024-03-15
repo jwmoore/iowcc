@@ -139,7 +139,7 @@ export default async function Page({ params }: PageParams) {
 
       <p>
         <Link href={`/${params.season}`}>
-          &lt; Back to {params.season} Season
+          &larr; Back to {params.season} Season
         </Link>
       </p>
 

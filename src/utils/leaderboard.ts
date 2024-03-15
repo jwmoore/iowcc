@@ -24,8 +24,6 @@ export interface DriverScore {
   };
 }
 
-const maxPoints = 50;
-
 function tallyWtDnf(score: string | undefined) {
   if (score && /WT|DNF/.test(score.toUpperCase())) {
     return 1;
@@ -35,6 +33,7 @@ function tallyWtDnf(score: string | undefined) {
 }
 
 export async function getLeaderboard(sheetId: string, ranges: string[]) {
+  const maxPoints = 50;
   const drivers = await getDrivers(sheetId);
   const results = [];
   const leaderboard = [] as DriverScore[];
@@ -48,8 +47,6 @@ export async function getLeaderboard(sheetId: string, ranges: string[]) {
     let unsealedPoints = [];
     let sealedDrop = [];
     let unsealedDrop = [];
-    let sealedEvents = 0;
-    let unsealedEvents = 0;
     let sealedWt = 0;
     let unsealedWt = 0;
     let sealedClass = 0;
@@ -60,7 +57,6 @@ export async function getLeaderboard(sheetId: string, ranges: string[]) {
         if (drivers[i] === results[j][k].name) {
           if (ranges[j].toUpperCase().endsWith(" (SS)")) {
             sealedPoints.push(Math.max(maxPoints - k, 1));
-            sealedEvents += 1;
             sealedWt += tallyWtDnf(results[j][k].run1);
             sealedWt += tallyWtDnf(results[j][k].run2);
             sealedWt += tallyWtDnf(results[j][k].run3);
@@ -70,7 +66,6 @@ export async function getLeaderboard(sheetId: string, ranges: string[]) {
             sealedClass = Math.max(parseInt(results[j][k].class), sealedClass);
           } else if (ranges[j].toUpperCase().endsWith(" (USS)")) {
             unsealedPoints.push(Math.max(maxPoints - k, 1));
-            unsealedEvents += 1;
             unsealedWt += tallyWtDnf(results[j][k].run1);
             unsealedWt += tallyWtDnf(results[j][k].run2);
             unsealedWt += tallyWtDnf(results[j][k].run3);

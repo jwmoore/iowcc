@@ -30,7 +30,7 @@ export default async function Page({ params }: PageParams) {
   }: {
     data: DriverScore[];
     context?: "sealed" | "unsealed";
-  }) {
+  }): JSX.Element {
     if (!data.length) {
       return (
         <p>
@@ -176,7 +176,7 @@ export default async function Page({ params }: PageParams) {
       <h1>{params.season} Season</h1>
 
       <p>
-        <Link href="/">&lt; Back to Home</Link>
+        <Link href="/">&larr; Back to Home</Link>
       </p>
 
       <h2>Event Results</h2>
