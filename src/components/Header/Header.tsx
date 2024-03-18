@@ -1,6 +1,6 @@
 import styles from "./Header.module.css";
 
-export default ({ heading }: { heading: string }): JSX.Element => {
+const Header = ({ heading }: { heading: string }): JSX.Element => {
   return (
     <header className={styles.header}>
       <svg
@@ -97,3 +97,5 @@ export default ({ heading }: { heading: string }): JSX.Element => {
     </header>
   );
 };
+
+export default Header;
