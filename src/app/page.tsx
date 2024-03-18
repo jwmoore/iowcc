@@ -1,3 +1,4 @@
+import Header from "../components/Header/Header";
 import Link from "next/link";
 import { getSheetNames } from "../utils/sheets";
 
@@ -6,7 +7,7 @@ export default async function Home() {
 
   return (
     <>
-      <h1>IOWCC Autotest Championship Results</h1>
+      <Header heading="IOWCC Autotest Championship Results" />
 
       <p>Choose a season:</p>
       <ul>

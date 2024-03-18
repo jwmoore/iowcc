@@ -7,6 +7,7 @@ import {
   rangeToSlug,
 } from "../../utils/sheets";
 import { getLeaderboard, DriverScore } from "../../utils/leaderboard";
+import Header from "../../components/Header/Header";
 
 interface PageParams {
   params: {
@@ -173,7 +174,7 @@ export default async function Page({ params }: PageParams) {
 
   return (
     <>
-      <h1>{params.season} Season</h1>
+      <Header heading={`${params.season} Season}`} />
 
       <p>
         <Link href="/">&larr; Back to Home</Link>

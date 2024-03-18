@@ -8,6 +8,7 @@ import {
   EventResult,
 } from "../../../utils/sheets";
 import styles from "./event.module.css";
+import Header from "../../../components/Header/Header";
 
 interface PageParams {
   params: {
@@ -135,7 +136,7 @@ export default async function Page({ params }: PageParams) {
 
   return (
     <>
-      <h1>Results: {range}</h1>
+      <Header heading={`Results: ${range}`} />
 
       <p>
         <Link href={`/${params.season}`}>
