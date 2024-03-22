@@ -174,7 +174,7 @@ export default async function Page({ params }: PageParams) {
 
   return (
     <>
-      <Header heading={`${params.season} Season}`} />
+      <Header heading={`${params.season} Season`} />
 
       <p>
         <Link href="/">&larr; Back to Home</Link>
