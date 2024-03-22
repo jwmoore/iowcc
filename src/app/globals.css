@@ -3,11 +3,15 @@
 }
 
 body {
-  padding: 20px;
   color: #6b6b6b;
   font-size: 13px;
   background: white;
   font-family: sans-serif;
+}
+
+.root {
+  display: inline-block;
+  padding: 20px;
 }
 
 table {
