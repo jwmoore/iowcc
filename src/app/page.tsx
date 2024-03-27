@@ -11,13 +11,16 @@ export default async function Home() {
 
       <p>Choose a season:</p>
       <ul>
-        {seasons.map((season, index) => {
-          return (
-            <li key={index}>
-              <Link href={`/${season}`}>{season}</Link>
-            </li>
-          );
-        })}
+        {seasons
+          .sort()
+          .reverse()
+          .map((season, index) => {
+            return (
+              <li key={index}>
+                <Link href={`/${season}`}>{season}</Link>
+              </li>
+            );
+          })}
       </ul>
     </>
   );
