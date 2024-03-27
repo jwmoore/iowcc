@@ -1,6 +1,7 @@
+import type { HeaderProps } from "./header.types";
 import styles from "./Header.module.css";
 
-const Header = ({ heading }: { heading: string }): JSX.Element => {
+const Header = ({ heading }: HeaderProps): JSX.Element => {
   return (
     <header className={styles.header}>
       <svg
