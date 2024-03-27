@@ -1,15 +1,15 @@
-const key = "AIzaSyCjPtdGtmKcPN4QCSlMrCiZNxIG1GQouoQ";
+const key = process.env.API_KEY;
 // Get files list for "Live Timing" folder
-const folderId = "1bzRa7MfmtwnVUFWLjMcVZ3bUU_bUo73J";
+const folderId = process.env.FOLDER_ID;
 
-interface SheetsFile {
+type SheetsFile = {
   kind: string;
   mimeType: string;
   id: string;
   name: string;
-}
+};
 
-export interface EventResult {
+export type EventResult = {
   name: string;
   car: string;
   class: string;
@@ -20,7 +20,7 @@ export interface EventResult {
   run5: string;
   run6: string;
   best: number;
-}
+};
 
 export function rangeToSlug(range: string) {
   return range

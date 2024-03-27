@@ -1,6 +1,6 @@
 import { getEventResults, getDrivers } from "./sheets";
 
-export interface DriverScore {
+export type DriverScore = {
   name: string;
   classes: {
     sealed: number;
@@ -22,7 +22,7 @@ export interface DriverScore {
     sealed: number;
     unsealed: number;
   };
-}
+};
 
 function tallyWtDnf(score: string | undefined) {
   if (score && /WT|DNF/.test(score.toUpperCase())) {
