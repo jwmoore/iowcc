@@ -8,6 +8,7 @@ import {
 } from "../../../utils/sheets";
 import Header from "../../../components/header/header";
 import ResultsTable from "../../../components/resultstable/resultstable";
+import { notFound } from "next/navigation";
 
 type PageParams = {
   params: {
@@ -18,6 +19,11 @@ type PageParams = {
 
 export default async function Page({ params }: PageParams) {
   const sheetId = await getSheetId(params.season);
+
+  if (!sheetId) {
+    return notFound();
+  }
+
   const ranges = await getRanges(sheetId);
   const range = ranges.filter((item) => params.event === rangeToSlug(item))[0];
 

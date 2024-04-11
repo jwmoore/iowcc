@@ -9,6 +9,7 @@ import {
 import { getLeaderboard } from "../../utils/leaderboard";
 import Header from "../../components/header/header";
 import Leaderboard from "../../components/leaderboard/leaderboard";
+import { notFound } from "next/navigation";
 
 type PageParams = {
   params: {
@@ -18,6 +19,11 @@ type PageParams = {
 
 export default async function Page({ params }: PageParams) {
   const sheetId = await getSheetId(params.season);
+
+  if (!sheetId) {
+    return notFound();
+  }
+
   const ranges = await getRanges(sheetId);
   const drivers = await getDrivers(sheetId);
   const leaderboard = await getLeaderboard(sheetId, ranges);

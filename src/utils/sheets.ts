@@ -68,7 +68,7 @@ export async function getSheetId(season: string) {
   const sheets = await res.json();
   const sheet = sheets.files.filter((file: SheetsFile) => file.name === season);
 
-  return sheet[0].id as string;
+  return (sheet[0]?.id as string) || null;
 }
 
 export async function getRanges(sheetId: string) {
