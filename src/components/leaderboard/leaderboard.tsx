@@ -1,3 +1,4 @@
+import React from "react";
 import type { DriverScore } from "../../utils/leaderboard";
 import type { LeaderboardProps } from "./leaderboard.types";
 
@@ -144,7 +145,7 @@ const Leaderboard = ({
             );
           }
 
-          return <></>;
+          return <React.Fragment key={index}></React.Fragment>;
         })}
       </tbody>
     </table>

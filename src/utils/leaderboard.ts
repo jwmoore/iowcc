@@ -1,4 +1,4 @@
-import { getEventResults, getDrivers } from "./sheets";
+import { getEventResults, getDrivers, EventResult } from "./sheets";
 
 export type DriverScore = {
   name: string;
@@ -32,6 +32,30 @@ function tallyWtDnf(score: string | undefined) {
   return 0;
 }
 
+function hasValidResult(result: EventResult) {
+  const results = [
+    result.run1,
+    result.run2,
+    result.run3,
+    result.run4,
+    result.run5,
+    result.run6,
+  ].filter((value) => {
+    if (
+      value &&
+      (value.toUpperCase() === "WT" ||
+        value.toUpperCase() === "DNF" ||
+        value.endsWith("*"))
+    ) {
+      return true;
+    }
+
+    return false;
+  });
+
+  return Boolean(results.length);
+}
+
 export async function getLeaderboard(sheetId: string, ranges: string[]) {
   const maxPoints = 50;
   const drivers = await getDrivers(sheetId);
@@ -54,7 +78,10 @@ export async function getLeaderboard(sheetId: string, ranges: string[]) {
 
     for (let j = 0; j < results.length; j += 1) {
       for (let k = 0; k < results[j].length; k += 1) {
-        if (drivers[i] === results[j][k].name) {
+        if (
+          drivers[i] === results[j][k].name &&
+          hasValidResult(results[j][k])
+        ) {
           if (ranges[j].toUpperCase().endsWith(" (SS)")) {
             sealedPoints.push(Math.max(maxPoints - k, 1));
             sealedWt += tallyWtDnf(results[j][k].run1);
