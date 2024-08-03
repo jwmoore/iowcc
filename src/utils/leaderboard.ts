@@ -1,4 +1,9 @@
-import { getEventResults, getDrivers, EventResult } from "./sheets";
+import {
+  getEventResults,
+  getDrivers,
+  EventResult,
+  SortedEventResult,
+} from "./sheets";
 
 export type DriverScore = {
   name: string;
@@ -24,6 +29,37 @@ export type DriverScore = {
   };
 };
 
+export function setPosition(data: EventResult[]) {
+  const sortedData = data.sort(
+    (a, b) => a.best - b.best
+  ) as SortedEventResult[];
+  let position = 0;
+
+  for (let i = 0; i < sortedData.length; i += 1) {
+    // set position
+    if (i === 0 || sortedData[i - 1].best < sortedData[i].best) {
+      position += 1;
+    }
+
+    sortedData[i].position = position;
+
+    // set gaps
+    if (i === 0) {
+      sortedData[i].gap = 0;
+      sortedData[i].gap1st = 0;
+    } else {
+      sortedData[i].gap = parseFloat(
+        (sortedData[i].best - sortedData[i - 1].best).toFixed(2)
+      );
+      sortedData[i].gap1st = parseFloat(
+        (sortedData[i].best - sortedData[0].best).toFixed(2)
+      );
+    }
+  }
+
+  return sortedData;
+}
+
 function tallyWtDnf(score: string | undefined) {
   if (score && /WT|DNF/.test(score.toUpperCase())) {
     return 1;
@@ -45,7 +81,8 @@ function hasValidResult(result: EventResult) {
       value &&
       (value.toUpperCase() === "WT" ||
         value.toUpperCase() === "DNF" ||
-        value.endsWith("*"))
+        value.endsWith("*") ||
+        !isNaN(parseFloat(value)))
     ) {
       return true;
     }
@@ -59,7 +96,7 @@ function hasValidResult(result: EventResult) {
 export async function getLeaderboard(sheetId: string, ranges: string[]) {
   const maxPoints = 50;
   const drivers = await getDrivers(sheetId);
-  const results = [];
+  const results = [] as EventResult[][];
   const leaderboard = [] as DriverScore[];
 
   for (let i = 0; i < ranges.length; i += 1) {
@@ -77,30 +114,39 @@ export async function getLeaderboard(sheetId: string, ranges: string[]) {
     let unsealedClass = 0;
 
     for (let j = 0; j < results.length; j += 1) {
-      for (let k = 0; k < results[j].length; k += 1) {
+      const sortedResult = setPosition(results[j]);
+
+      for (let k = 0; k < sortedResult.length; k += 1) {
         if (
-          drivers[i] === results[j][k].name &&
-          hasValidResult(results[j][k])
+          drivers[i] === sortedResult[k].name &&
+          hasValidResult(sortedResult[k])
         ) {
           if (ranges[j].toUpperCase().endsWith(" (SS)")) {
-            sealedPoints.push(Math.max(maxPoints - k, 1));
-            sealedWt += tallyWtDnf(results[j][k].run1);
-            sealedWt += tallyWtDnf(results[j][k].run2);
-            sealedWt += tallyWtDnf(results[j][k].run3);
-            sealedWt += tallyWtDnf(results[j][k].run4);
-            sealedWt += tallyWtDnf(results[j][k].run5);
-            sealedWt += tallyWtDnf(results[j][k].run6);
-            sealedClass = Math.max(parseInt(results[j][k].class), sealedClass);
+            sealedPoints.push(
+              Math.max(maxPoints - (sortedResult[k].position - 1), 1)
+            );
+            sealedWt += tallyWtDnf(sortedResult[k].run1);
+            sealedWt += tallyWtDnf(sortedResult[k].run2);
+            sealedWt += tallyWtDnf(sortedResult[k].run3);
+            sealedWt += tallyWtDnf(sortedResult[k].run4);
+            sealedWt += tallyWtDnf(sortedResult[k].run5);
+            sealedWt += tallyWtDnf(sortedResult[k].run6);
+            sealedClass = Math.max(
+              parseInt(sortedResult[k].class),
+              sealedClass
+            );
           } else if (ranges[j].toUpperCase().endsWith(" (USS)")) {
-            unsealedPoints.push(Math.max(maxPoints - k, 1));
-            unsealedWt += tallyWtDnf(results[j][k].run1);
-            unsealedWt += tallyWtDnf(results[j][k].run2);
-            unsealedWt += tallyWtDnf(results[j][k].run3);
-            unsealedWt += tallyWtDnf(results[j][k].run4);
-            unsealedWt += tallyWtDnf(results[j][k].run5);
-            unsealedWt += tallyWtDnf(results[j][k].run6);
+            unsealedPoints.push(
+              Math.max(maxPoints - (sortedResult[k].position - 1), 1)
+            );
+            unsealedWt += tallyWtDnf(sortedResult[k].run1);
+            unsealedWt += tallyWtDnf(sortedResult[k].run2);
+            unsealedWt += tallyWtDnf(sortedResult[k].run3);
+            unsealedWt += tallyWtDnf(sortedResult[k].run4);
+            unsealedWt += tallyWtDnf(sortedResult[k].run5);
+            unsealedWt += tallyWtDnf(sortedResult[k].run6);
             unsealedClass = Math.max(
-              parseInt(results[j][k].class),
+              parseInt(sortedResult[k].class),
               unsealedClass
             );
           }

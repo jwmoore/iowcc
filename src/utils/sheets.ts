@@ -22,6 +22,12 @@ export type EventResult = {
   best: number;
 };
 
+export type SortedEventResult = EventResult & {
+  position: number;
+  gap: number;
+  gap1st: number;
+};
+
 export function rangeToSlug(range: string) {
   return range
     .replaceAll(" - ", " ")

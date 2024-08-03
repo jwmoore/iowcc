@@ -1,8 +1,5 @@
-import type {
-  ResultsTableProps,
-  SortedEventResult,
-} from "./resultstable.types";
-import type { EventResult } from "../../utils/sheets";
+import type { ResultsTableProps } from "./resultstable.types";
+import { setPosition } from "../../utils/leaderboard";
 import styles from "./resultstable.module.css";
 
 const maxPoints = 50;
@@ -19,37 +16,6 @@ function resultClass(result: string) {
   if (result.endsWith("*")) {
     return styles.bold;
   }
-}
-
-function setPosition(data: EventResult[]) {
-  const sortedData = data.sort(
-    (a, b) => a.best - b.best
-  ) as SortedEventResult[];
-  let position = 0;
-
-  for (let i = 0; i < sortedData.length; i += 1) {
-    // set position
-    if (i === 0 || sortedData[i - 1].best < sortedData[i].best) {
-      position += 1;
-    }
-
-    sortedData[i].position = position;
-
-    // set gaps
-    if (i === 0) {
-      sortedData[i].gap = 0;
-      sortedData[i].gap1st = 0;
-    } else {
-      sortedData[i].gap = parseFloat(
-        (sortedData[i].best - sortedData[i - 1].best).toFixed(2)
-      );
-      sortedData[i].gap1st = parseFloat(
-        (sortedData[i].best - sortedData[0].best).toFixed(2)
-      );
-    }
-  }
-
-  return sortedData;
 }
 
 const ResultsTable = ({ data }: ResultsTableProps): JSX.Element => {

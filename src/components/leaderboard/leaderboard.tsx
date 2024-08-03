@@ -89,7 +89,7 @@ const Leaderboard = ({
               );
             }
 
-            return <></>;
+            return <React.Fragment key={index}></React.Fragment>;
           }
 
           if (driver.points.sealed.length || driver.points.unsealed.length) {
