@@ -1,7 +1,7 @@
-import type { DriverScore } from "../../utils/leaderboard";
+import type { LeaderboardRow } from "../../utils/leaderboard";
 
 export type LeaderboardProps = {
   ranges: string[];
-  leaderboard: DriverScore[];
+  leaderboard: LeaderboardRow[];
   context?: "sealed" | "unsealed";
 };

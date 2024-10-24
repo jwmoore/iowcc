@@ -5,7 +5,7 @@ import {
   SortedEventResult,
 } from "./sheets";
 
-export type DriverScore = {
+export type LeaderboardRow = {
   name: string;
   classes: {
     sealed: number;
@@ -93,14 +93,26 @@ function hasValidResult(result: EventResult) {
   return Boolean(results.length);
 }
 
-export async function getLeaderboard(sheetId: string, ranges: string[]) {
+export async function getLeaderboard(
+  sheetId: string,
+  ranges: string[],
+  classNumber?: number
+) {
   const maxPoints = 50;
   const drivers = await getDrivers(sheetId);
-  const results = [] as EventResult[][];
-  const leaderboard = [] as DriverScore[];
+  const results: EventResult[][] = [];
+  const leaderboard: LeaderboardRow[] = [];
 
   for (let i = 0; i < ranges.length; i += 1) {
-    results.push(await getEventResults(sheetId, ranges[i]));
+    const eventResults = await getEventResults(sheetId, ranges[i]);
+
+    results.push(
+      eventResults.filter((eventResult) => {
+        return classNumber
+          ? eventResult.class === classNumber.toString()
+          : true;
+      })
+    );
   }
 
   for (let i = 0; i < drivers.length; i += 1) {

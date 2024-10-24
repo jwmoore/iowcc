@@ -1,0 +1,34 @@
+.classGroup,
+.contextOverall,
+.contextSealed,
+.contextUnsealed {
+  display: none;
+}
+
+.label:has(input[name="context"][value=""]:checked)
+  ~ .classGroup
+  .contextOverall,
+.label:has(input[name="context"][value="sealed"]:checked)
+  ~ .classGroup
+  .contextSealed,
+.label:has(input[name="context"][value="unsealed"]:checked)
+  ~ .classGroup
+  .contextUnsealed {
+  display: block;
+}
+
+.label:has(input[name="class"][value="0"]:checked) ~ .class0,
+.label:has(input[name="class"][value="1"]:checked) ~ .class1,
+.label:has(input[name="class"][value="2"]:checked) ~ .class2,
+.label:has(input[name="class"][value="3"]:checked) ~ .class3,
+.label:has(input[name="class"][value="4"]:checked) ~ .class4,
+.label:has(input[name="class"][value="5"]:checked) ~ .class5 {
+  display: block;
+}
+
+.label {
+  display: inline-flex;
+  gap: 0 4px;
+  margin-block-end: 8px;
+  margin-inline-end: 16px;
+}
