@@ -1,5 +1,5 @@
 import React from "react";
-import type { DriverScore } from "../../utils/leaderboard";
+import type { LeaderboardRow } from "../../utils/leaderboard";
 import type { LeaderboardProps } from "./leaderboard.types";
 
 const Leaderboard = ({
@@ -31,13 +31,13 @@ const Leaderboard = ({
   const sortedData = context
     ? (leaderboard.sort(
         (a, b) => b.totals[context] - a.totals[context]
-      ) as (DriverScore & { position: number })[])
+      ) as (LeaderboardRow & { position: number })[])
     : (leaderboard.sort(
         (a, b) =>
           b.totals.sealed +
           b.totals.unsealed -
           (a.totals.sealed + a.totals.unsealed)
-      ) as (DriverScore & { position: number })[]);
+      ) as (LeaderboardRow & { position: number })[]);
   let position = 0;
 
   for (let i = 0; i < sortedData.length; i += 1) {
