@@ -49,7 +49,8 @@ function resultToNumber(result: string) {
 
 export async function getSheetNames() {
   const res = await fetch(
-    `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&key=${key}`
+    `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&key=${key}`,
+    { next: { revalidate: 86400 } }
   );
 
   if (!res.ok) {
@@ -64,7 +65,8 @@ export async function getSheetNames() {
 
 export async function getSheetId(season: string) {
   const res = await fetch(
-    `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&key=${key}`
+    `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&key=${key}`,
+    { next: { revalidate: 86400 } }
   );
 
   if (!res.ok) {
@@ -80,7 +82,7 @@ export async function getSheetId(season: string) {
 export async function getRanges(sheetId: string) {
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${key}`,
-    { next: { revalidate: 600 } }
+    { next: { revalidate: 3600 } }
   );
 
   if (!res.ok) {
@@ -98,7 +100,7 @@ export async function getDrivers(sheetId: string) {
   const range = "Drivers!A:A";
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${key}`,
-    { next: { revalidate: 600 } }
+    { next: { revalidate: 3600 } }
   );
 
   if (!res.ok) {
