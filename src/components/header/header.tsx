@@ -1,6 +1,8 @@
 import type { HeaderProps } from "./header.types";
 import styles from "./header.module.css";
 
+import type { JSX } from "react";
+
 const Header = ({ heading }: HeaderProps): JSX.Element => {
   return (
     <header className={styles.header}>

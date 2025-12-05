@@ -2,6 +2,8 @@ import type { ResultsTableProps } from "./resultstable.types";
 import { setPosition } from "../../utils/leaderboard";
 import styles from "./resultstable.module.css";
 
+import type { JSX } from "react";
+
 const maxPoints = 50;
 
 function resultClass(result: string) {

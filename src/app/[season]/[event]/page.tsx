@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import {
   getSheetId,
   getRanges,
@@ -11,13 +10,14 @@ import ResultsTable from "../../../components/resultstable/resultstable";
 import { notFound } from "next/navigation";
 
 type PageParams = {
-  params: {
+  params: Promise<{
     season: string;
     event: string;
-  };
+  }>;
 };
 
-export default async function Page({ params }: PageParams) {
+export default async function Page(props: PageParams) {
+  const params = await props.params;
   const sheetId = await getSheetId(params.season);
 
   if (!sheetId) {
