@@ -21,6 +21,9 @@
     "eslint-config-next": "16.0.7",
     "typescript": "^5"
   },
+  "engines": {
+    "node": "22"
+  },
   "overrides": {
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3"
