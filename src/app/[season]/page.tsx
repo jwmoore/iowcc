@@ -1,5 +1,4 @@
 import Link from "next/link";
-import React from "react";
 import {
   getSheetId,
   getRanges,
@@ -11,14 +10,16 @@ import Header from "../../components/header/header";
 import Leaderboard from "../../components/leaderboard/leaderboard";
 import { notFound } from "next/navigation";
 import styles from "./page.module.css";
+import { Fragment } from "react/jsx-runtime";
 
 type PageParams = {
-  params: {
+  params: Promise<{
     season: string;
-  };
+  }>;
 };
 
-export default async function Page({ params }: PageParams) {
+export default async function Page(props: PageParams) {
+  const params = await props.params;
   const sheetId = await getSheetId(params.season);
 
   if (!sheetId) {
@@ -44,7 +45,7 @@ export default async function Page({ params }: PageParams) {
       <ul>
         {ranges.map((range, index) => {
           if (index === 0) {
-            return <React.Fragment key={index}></React.Fragment>;
+            return <Fragment key={index}></Fragment>;
           }
 
           return (
@@ -267,7 +268,7 @@ export default async function Page({ params }: PageParams) {
               );
             }
 
-            return <React.Fragment key={index}></React.Fragment>;
+            return <Fragment key={index}></Fragment>;
           })}
         </tbody>
       </table>

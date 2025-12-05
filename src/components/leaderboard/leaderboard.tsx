@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type JSX } from "react";
 import type { LeaderboardRow } from "../../utils/leaderboard";
 import type { LeaderboardProps } from "./leaderboard.types";
 
