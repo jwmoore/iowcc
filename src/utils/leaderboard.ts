@@ -3,6 +3,7 @@ import {
   getDrivers,
   EventResult,
   SortedEventResult,
+  getConfig,
 } from "./sheets";
 
 export type LeaderboardRow = {
@@ -30,9 +31,7 @@ export type LeaderboardRow = {
 };
 
 export function setPosition(data: EventResult[]) {
-  const sortedData = data.sort(
-    (a, b) => a.best - b.best
-  ) as SortedEventResult[];
+  const sortedData: SortedEventResult[] = data.sort((a, b) => a.best - b.best);
   let position = 0;
 
   for (let i = 0; i < sortedData.length; i += 1) {
@@ -49,10 +48,10 @@ export function setPosition(data: EventResult[]) {
       sortedData[i].gap1st = 0;
     } else {
       sortedData[i].gap = parseFloat(
-        (sortedData[i].best - sortedData[i - 1].best).toFixed(2)
+        (sortedData[i].best - sortedData[i - 1].best).toFixed(2),
       );
       sortedData[i].gap1st = parseFloat(
-        (sortedData[i].best - sortedData[0].best).toFixed(2)
+        (sortedData[i].best - sortedData[0].best).toFixed(2),
       );
     }
   }
@@ -96,9 +95,12 @@ function hasValidResult(result: EventResult) {
 export async function getLeaderboard(
   sheetId: string,
   ranges: string[],
-  classNumber?: number
+  classNumber?: number,
 ) {
   const maxPoints = 50;
+  const championshipConfig = await getConfig(sheetId);
+  const ssRoundsToCount = parseInt(championshipConfig[0] || "5");
+  const ussRoundsToCount = parseInt(championshipConfig[1] || "5");
   const drivers = await getDrivers(sheetId);
   const results: EventResult[][] = [];
   const leaderboard: LeaderboardRow[] = [];
@@ -111,7 +113,7 @@ export async function getLeaderboard(
         return classNumber
           ? eventResult.class === classNumber.toString()
           : true;
-      })
+      }),
     );
   }
 
@@ -135,7 +137,7 @@ export async function getLeaderboard(
         ) {
           if (ranges[j].toUpperCase().endsWith(" (SS)")) {
             sealedPoints.push(
-              Math.max(maxPoints - (sortedResult[k].position - 1), 1)
+              Math.max(maxPoints - ((sortedResult[k].position || 0) - 1), 1),
             );
             sealedWt += tallyWtDnf(sortedResult[k].run1);
             sealedWt += tallyWtDnf(sortedResult[k].run2);
@@ -145,11 +147,11 @@ export async function getLeaderboard(
             sealedWt += tallyWtDnf(sortedResult[k].run6);
             sealedClass = Math.max(
               parseInt(sortedResult[k].class),
-              sealedClass
+              sealedClass,
             );
           } else if (ranges[j].toUpperCase().endsWith(" (USS)")) {
             unsealedPoints.push(
-              Math.max(maxPoints - (sortedResult[k].position - 1), 1)
+              Math.max(maxPoints - ((sortedResult[k].position || 0) - 1), 1),
             );
             unsealedWt += tallyWtDnf(sortedResult[k].run1);
             unsealedWt += tallyWtDnf(sortedResult[k].run2);
@@ -159,7 +161,7 @@ export async function getLeaderboard(
             unsealedWt += tallyWtDnf(sortedResult[k].run6);
             unsealedClass = Math.max(
               parseInt(sortedResult[k].class),
-              unsealedClass
+              unsealedClass,
             );
           }
         }
@@ -168,10 +170,10 @@ export async function getLeaderboard(
 
     sealedPoints.sort((a, b) => b - a);
     unsealedPoints.sort((a, b) => b - a);
-    sealedDrop = sealedPoints.slice(5);
-    unsealedDrop = unsealedPoints.slice(5);
-    sealedPoints = sealedPoints.slice(0, 5);
-    unsealedPoints = unsealedPoints.slice(0, 5);
+    sealedDrop = sealedPoints.slice(ssRoundsToCount);
+    unsealedDrop = unsealedPoints.slice(ussRoundsToCount);
+    sealedPoints = sealedPoints.slice(0, ssRoundsToCount);
+    unsealedPoints = unsealedPoints.slice(0, ussRoundsToCount);
 
     leaderboard.push({
       name: drivers[i],
@@ -194,11 +196,11 @@ export async function getLeaderboard(
       totals: {
         sealed: sealedPoints.reduce(
           (accumulator, currentValue) => accumulator + currentValue,
-          0
+          0,
         ),
         unsealed: unsealedPoints.reduce(
           (accumulator, currentValue) => accumulator + currentValue,
-          0
+          0,
         ),
       },
     });

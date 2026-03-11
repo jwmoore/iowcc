@@ -23,21 +23,31 @@ export type EventResult = {
 };
 
 export type SortedEventResult = EventResult & {
-  position: number;
-  gap: number;
-  gap1st: number;
+  position?: number;
+  gap?: number;
+  gap1st?: number;
 };
 
-export function rangeToSlug(range: string) {
+/**
+ * @returns A string representing the slug of the range.
+ * @description The slug is the slug of the range.
+ * The slug is the range in the spreadsheet.
+ */
+export function rangeToSlug(range: string): string {
   return range
     .replaceAll(" - ", " ")
     .replaceAll("/", "-")
     .replaceAll(" ", "-")
     .toLowerCase()
-    .replace(/[^a-z0-9-]/g, "") as string;
+    .replace(/[^a-z0-9-]/g, "");
 }
 
-function resultToNumber(result: string) {
+/**
+ * @returns A number representing the result.
+ * @description The result is the result of the event.
+ * The result is the best time of the event.
+ */
+function resultToNumber(result: string): number {
   const parsedResult = parseFloat(result?.replaceAll("*", ""));
 
   if (!result || isNaN(parsedResult)) {
@@ -47,86 +57,128 @@ function resultToNumber(result: string) {
   return parsedResult;
 }
 
-export async function getSheetNames() {
+/**
+ * @returns An array of strings representing the names of the sheets in the spreadsheet.
+ * @description The names are the names of the sheets in the spreadsheet.
+ */
+export async function getSheetNames(): Promise<string[]> {
   const res = await fetch(
     `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&key=${key}`,
-    { next: { revalidate: 86400 } }
+    { next: { revalidate: 86400 } },
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    return [];
   }
 
   const sheets = await res.json();
   const names = sheets.files.map((file: SheetsFile) => file.name);
-  console.log(sheets);
-  return names as string[];
+
+  return names;
 }
 
-export async function getSheetId(season: string) {
+/**
+ * @returns The ID of the sheet for the given season.
+ * @description The ID is the ID of the sheet in the spreadsheet.
+ */
+export async function getSheetId(season: string): Promise<string | null> {
   const res = await fetch(
     `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents&key=${key}`,
-    { next: { revalidate: 86400 } }
+    { next: { revalidate: 86400 } },
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    return null;
   }
 
   const sheets = await res.json();
   const sheet = sheets.files.filter((file: SheetsFile) => file.name === season);
 
-  return (sheet[0]?.id as string) || null;
+  return sheet[0]?.id || null;
 }
 
-export async function getRanges(sheetId: string) {
+/**
+ * @returns An array of strings representing the ranges in the sheet.
+ * @description The array represents the ranges in the sheet.
+ * The ranges are the titles of the sheets in the spreadsheet.
+ */
+export async function getRanges(sheetId: string): Promise<string[]> {
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?key=${key}`,
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 3600 } },
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    return [];
   }
 
   const sheets = await res.json();
 
   return sheets.sheets.map(
-    (sheet: { properties: { title: string } }) => sheet.properties.title
-  ) as string[];
+    (sheet: { properties: { title: string } }) => sheet.properties.title,
+  );
 }
 
-export async function getDrivers(sheetId: string) {
+export async function getDrivers(sheetId: string): Promise<string[]> {
   const range = "Drivers!A:A";
   const res = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${key}`,
-    { next: { revalidate: 3600 } }
+    { next: { revalidate: 3600 } },
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    return [];
   }
 
   const drivers = await res.json();
 
-  return drivers.values.map((driver: string[]) => driver[0]) as string[];
+  return drivers.values.map((driver: string[]) => driver[0]);
 }
 
-export async function getEventResults(sheetId: string, range: string) {
+/**
+ * @returns An array of strings representing the championship configuration.
+ * @description The array represents the championship configuration.
+ * The first element is the number of SS rounds to count.
+ * The second element is the number of USS rounds to count.
+ */
+export async function getConfig(sheetId: string): Promise<string[]> {
+  const range = "Config!A:A";
   const res = await fetch(
-    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/'${encodeURIComponent(
-      range
-    )}'?key=${key}`,
-    { next: { revalidate: 60 } }
+    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${key}`,
+    { next: { revalidate: 3600 } },
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    return [];
   }
 
   const drivers = await res.json();
 
-  let overallData = drivers.values
+  return drivers.values.map((config: string[]) => config[0]);
+}
+
+/**
+ * @returns An array of strings representing the event results.
+ * @description The array represents the event results.
+ */
+export async function getEventResults(
+  sheetId: string,
+  range: string,
+): Promise<EventResult[]> {
+  const res = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/'${encodeURIComponent(
+      range,
+    )}'?key=${key}`,
+    { next: { revalidate: 60 } },
+  );
+
+  if (!res.ok) {
+    return [];
+  }
+
+  const drivers = await res.json();
+
+  let overallData: EventResult[] = drivers.values
     .filter((item: string[]) => item.length > 3)
     .map((result: string[]) => {
       return {
@@ -145,12 +197,12 @@ export async function getEventResults(sheetId: string, range: string) {
           resultToNumber(result[5]),
           resultToNumber(result[6]),
           resultToNumber(result[7]),
-          resultToNumber(result[8])
+          resultToNumber(result[8]),
         ),
         gap: 0,
         gap1st: 0,
       };
-    }) as EventResult[];
+    });
 
   overallData.sort(function (a, b) {
     return a.best - b.best;

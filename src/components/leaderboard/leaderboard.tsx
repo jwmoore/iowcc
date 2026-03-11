@@ -28,16 +28,14 @@ const Leaderboard = ({
     );
   }
 
-  const sortedData = context
-    ? (leaderboard.sort(
-        (a, b) => b.totals[context] - a.totals[context]
-      ) as (LeaderboardRow & { position: number })[])
-    : (leaderboard.sort(
+  const sortedData: (LeaderboardRow & { position?: number })[] = context
+    ? leaderboard.sort((a, b) => b.totals[context] - a.totals[context])
+    : leaderboard.sort(
         (a, b) =>
           b.totals.sealed +
           b.totals.unsealed -
-          (a.totals.sealed + a.totals.unsealed)
-      ) as (LeaderboardRow & { position: number })[]);
+          (a.totals.sealed + a.totals.unsealed),
+      );
   let position = 0;
 
   for (let i = 0; i < sortedData.length; i += 1) {

@@ -66,13 +66,19 @@ const ResultsTable = ({ data }: ResultsTableProps): JSX.Element => {
               <td className={resultClass(result.run5)}>{result.run5}</td>
               <td className={resultClass(result.run6)}>{result.run6}</td>
               <td>{isFinite(result.best) ? result.best : ""}</td>
-              <td>{index > 0 && isFinite(result.gap) ? result.gap : ""}</td>
               <td>
-                {index > 0 && isFinite(result.gap1st) ? result.gap1st : ""}
+                {index > 0 && result.gap && isFinite(result.gap)
+                  ? result.gap
+                  : ""}
+              </td>
+              <td>
+                {index > 0 && result.gap1st && isFinite(result.gap1st)
+                  ? result.gap1st
+                  : ""}
               </td>
               <td>
                 {isFinite(result.best)
-                  ? Math.max(maxPoints - (result.position - 1), 1)
+                  ? Math.max(maxPoints - ((result.position || 0) - 1), 1)
                   : ""}
               </td>
             </tr>

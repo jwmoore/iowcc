@@ -45,8 +45,11 @@ export default async function Page(props: PageParams) {
       <h2>Event Results</h2>
       <ul>
         {ranges.map((range, index) => {
-          if (index === 0) {
-            return <Fragment key={index}></Fragment>;
+          if (
+            range.toLowerCase() === "drivers" ||
+            range.toLowerCase() === "config"
+          ) {
+            return null;
           }
 
           return (
