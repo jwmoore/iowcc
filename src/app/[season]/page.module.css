@@ -22,7 +22,8 @@
 .label:has(input[name="class"][value="2"]:checked) ~ .class2,
 .label:has(input[name="class"][value="3"]:checked) ~ .class3,
 .label:has(input[name="class"][value="4"]:checked) ~ .class4,
-.label:has(input[name="class"][value="5"]:checked) ~ .class5 {
+.label:has(input[name="class"][value="5"]:checked) ~ .class5,
+.label:has(input[name="class"][value="6"]:checked) ~ .class6 {
   display: block;
 }
 

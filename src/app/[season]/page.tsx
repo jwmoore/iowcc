@@ -34,6 +34,7 @@ export default async function Page(props: PageParams) {
   const leaderboardClass3 = await getLeaderboard(sheetId, ranges, 3);
   const leaderboardClass4 = await getLeaderboard(sheetId, ranges, 4);
   const leaderboardClass5 = await getLeaderboard(sheetId, ranges, 5);
+  const leaderboardClass6 = await getLeaderboard(sheetId, ranges, 6);
 
   return (
     <>
@@ -87,6 +88,10 @@ export default async function Page(props: PageParams) {
       <label className={styles.label}>
         <input type="radio" name="class" value="5" className={styles.input} />
         Class 5
+      </label>
+      <label className={styles.label}>
+        <input type="radio" name="class" value="6" className={styles.input} />
+        Class 6
       </label>
       <br />
       <label className={styles.label}>
@@ -248,6 +253,28 @@ export default async function Page(props: PageParams) {
             context="unsealed"
           />
         </div>
+      </div>
+      <div className={`${styles.class6} ${styles.classGroup}`}>
+        <div className={styles.contextOverall}>
+          <h3>Overall, Class 6</h3>
+          <Leaderboard leaderboard={leaderboardClass6} ranges={ranges} />
+        </div>
+      </div>
+      <div className={styles.contextSealed}>
+        <h3>Sealed, Class 6</h3>
+        <Leaderboard
+          leaderboard={leaderboardClass6}
+          ranges={ranges}
+          context="sealed"
+        />
+      </div>
+      <div className={styles.contextUnsealed}>
+        <h3>Unsealed, Class 6</h3>
+        <Leaderboard
+          leaderboard={leaderboardClass6}
+          ranges={ranges}
+          context="unsealed"
+        />
       </div>
       <h2>Registered Drivers</h2>
       <table>

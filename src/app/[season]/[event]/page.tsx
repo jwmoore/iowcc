@@ -67,6 +67,10 @@ export default async function Page(props: PageParams) {
       <ResultsTable
         data={overallData.filter((result) => result.class === "5")}
       />
+      <h3>Class 6</h3>
+      <ResultsTable
+        data={overallData.filter((result) => result.class === "6")}
+      />
     </>
   );
 }
