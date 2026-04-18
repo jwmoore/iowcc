@@ -1,16 +1,9 @@
 import Link from "next/link";
-import {
-  getSheetId,
-  getRanges,
-  getDrivers,
-  rangeToSlug,
-} from "../../utils/sheets";
-import { getLeaderboard } from "../../utils/leaderboard";
+import { getSheetId, getRanges, rangeToSlug } from "../../utils/sheets";
+import { getLeaderboard, getRegisteredDrivers, isEventSheetTitle } from "../../utils/leaderboard";
 import Header from "../../components/header/header";
-import Leaderboard from "../../components/leaderboard/leaderboard";
+import LeaderboardFilters from "../../components/leaderboard-filters/leaderboard-filters";
 import { notFound } from "next/navigation";
-import styles from "./page.module.css";
-import { Fragment } from "react/jsx-runtime";
 
 type PageParams = {
   params: Promise<{
@@ -27,7 +20,7 @@ export default async function Page(props: PageParams) {
   }
 
   const ranges = await getRanges(sheetId);
-  const drivers = await getDrivers(sheetId);
+  const drivers = await getRegisteredDrivers(sheetId, ranges);
   const leaderboard = await getLeaderboard(sheetId, ranges);
   const leaderboardClass1 = await getLeaderboard(sheetId, ranges, 1);
   const leaderboardClass2 = await getLeaderboard(sheetId, ranges, 2);
@@ -45,10 +38,7 @@ export default async function Page(props: PageParams) {
       <h2>Event Results</h2>
       <ul>
         {ranges.map((range, index) => {
-          if (
-            range.toLowerCase() === "drivers" ||
-            range.toLowerCase() === "config"
-          ) {
+          if (!isEventSheetTitle(range)) {
             return null;
           }
 
@@ -62,223 +52,18 @@ export default async function Page(props: PageParams) {
         })}
       </ul>
       <h2>Leaderboard</h2>
-      <label className={styles.label}>
-        <input
-          type="radio"
-          name="class"
-          value="0"
-          defaultChecked
-          className={styles.input}
-        />
-        All Classes
-      </label>
-      <label className={styles.label}>
-        <input type="radio" name="class" value="1" className={styles.input} />
-        Class 1
-      </label>
-      <label className={styles.label}>
-        <input type="radio" name="class" value="2" className={styles.input} />
-        Class 2
-      </label>
-      <label className={styles.label}>
-        <input type="radio" name="class" value="3" className={styles.input} />
-        Class 3
-      </label>
-      <label className={styles.label}>
-        <input type="radio" name="class" value="4" className={styles.input} />
-        Class 4
-      </label>
-      <label className={styles.label}>
-        <input type="radio" name="class" value="5" className={styles.input} />
-        Class 5
-      </label>
-      <label className={styles.label}>
-        <input type="radio" name="class" value="6" className={styles.input} />
-        Class 6
-      </label>
-      <br />
-      <label className={styles.label}>
-        <input
-          type="radio"
-          name="context"
-          value=""
-          defaultChecked
-          className={styles.input}
-        />
-        Overall
-      </label>
-      <label className={styles.label}>
-        <input
-          type="radio"
-          name="context"
-          value="sealed"
-          className={styles.input}
-        />
-        Sealed
-      </label>
-      <label className={styles.label}>
-        <input
-          type="radio"
-          name="context"
-          value="unsealed"
-          className={styles.input}
-        />
-        Unsealed
-      </label>
-      <div className={`${styles.class0} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, All Classes</h3>
-          <Leaderboard leaderboard={leaderboard} ranges={ranges} />
-        </div>
-        <div className={styles.contextSealed}>
-          <h3>Sealed, All Classes</h3>
-          <Leaderboard
-            leaderboard={leaderboard}
-            ranges={ranges}
-            context="sealed"
-          />
-        </div>
-        <div className={styles.contextUnsealed}>
-          <h3>Unsealed, All Classes</h3>
-          <Leaderboard
-            leaderboard={leaderboard}
-            ranges={ranges}
-            context="unsealed"
-          />
-        </div>
-      </div>
-      <div className={`${styles.class1} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, Class 1</h3>
-          <Leaderboard leaderboard={leaderboardClass1} ranges={ranges} />
-        </div>
-        <div className={styles.contextSealed}>
-          <h3>Sealed, Class 1</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass1}
-            ranges={ranges}
-            context="sealed"
-          />
-        </div>
-        <div className={styles.contextUnsealed}>
-          <h3>Unsealed, Class 1</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass1}
-            ranges={ranges}
-            context="unsealed"
-          />
-        </div>
-      </div>
-      <div className={`${styles.class2} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, Class 2</h3>
-          <Leaderboard leaderboard={leaderboardClass2} ranges={ranges} />
-        </div>
-        <div className={styles.contextSealed}>
-          <h3>Sealed, Class 2</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass2}
-            ranges={ranges}
-            context="sealed"
-          />
-        </div>
-        <div className={styles.contextUnsealed}>
-          <h3>Unsealed, Class 2</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass2}
-            ranges={ranges}
-            context="unsealed"
-          />
-        </div>
-      </div>
-      <div className={`${styles.class3} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, Class 3</h3>
-          <Leaderboard leaderboard={leaderboardClass3} ranges={ranges} />
-        </div>
-        <div className={styles.contextSealed}>
-          <h3>Sealed, Class 3</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass3}
-            ranges={ranges}
-            context="sealed"
-          />
-        </div>
-        <div className={styles.contextUnsealed}>
-          <h3>Unsealed, Class 3</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass3}
-            ranges={ranges}
-            context="unsealed"
-          />
-        </div>
-      </div>
-      <div className={`${styles.class4} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, Class 4</h3>
-          <Leaderboard leaderboard={leaderboardClass4} ranges={ranges} />
-        </div>
-        <div className={styles.contextSealed}>
-          <h3>Sealed, Class 4</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass4}
-            ranges={ranges}
-            context="sealed"
-          />
-        </div>
-        <div className={styles.contextUnsealed}>
-          <h3>Unsealed, Class 4</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass4}
-            ranges={ranges}
-            context="unsealed"
-          />
-        </div>
-      </div>
-      <div className={`${styles.class5} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, Class 5</h3>
-          <Leaderboard leaderboard={leaderboardClass5} ranges={ranges} />
-        </div>
-        <div className={styles.contextSealed}>
-          <h3>Sealed, Class 5</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass5}
-            ranges={ranges}
-            context="sealed"
-          />
-        </div>
-        <div className={styles.contextUnsealed}>
-          <h3>Unsealed, Class 5</h3>
-          <Leaderboard
-            leaderboard={leaderboardClass5}
-            ranges={ranges}
-            context="unsealed"
-          />
-        </div>
-      </div>
-      <div className={`${styles.class6} ${styles.classGroup}`}>
-        <div className={styles.contextOverall}>
-          <h3>Overall, Class 6</h3>
-          <Leaderboard leaderboard={leaderboardClass6} ranges={ranges} />
-        </div>
-      </div>
-      <div className={styles.contextSealed}>
-        <h3>Sealed, Class 6</h3>
-        <Leaderboard
-          leaderboard={leaderboardClass6}
-          ranges={ranges}
-          context="sealed"
-        />
-      </div>
-      <div className={styles.contextUnsealed}>
-        <h3>Unsealed, Class 6</h3>
-        <Leaderboard
-          leaderboard={leaderboardClass6}
-          ranges={ranges}
-          context="unsealed"
-        />
-      </div>
+      <LeaderboardFilters
+        ranges={ranges}
+        leaderboards={[
+          leaderboard,
+          leaderboardClass1,
+          leaderboardClass2,
+          leaderboardClass3,
+          leaderboardClass4,
+          leaderboardClass5,
+          leaderboardClass6,
+        ]}
+      />
       <h2>Registered Drivers</h2>
       <table>
         <thead>
@@ -288,18 +73,12 @@ export default async function Page(props: PageParams) {
           </tr>
         </thead>
         <tbody>
-          {drivers.map((driver, index) => {
-            if (driver) {
-              return (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{driver}</td>
-                </tr>
-              );
-            }
-
-            return <Fragment key={index}></Fragment>;
-          })}
+          {drivers.map((driver) => (
+            <tr key={driver.number}>
+              <td>{driver.number}</td>
+              <td>{driver.name}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </>
