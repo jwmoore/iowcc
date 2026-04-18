@@ -67,7 +67,7 @@ function tallyWtDnf(score: string | undefined) {
   return 0;
 }
 
-function hasValidResult(result: EventResult) {
+export function hasValidResult(result: EventResult) {
   const results = [
     result.run1,
     result.run2,
@@ -90,6 +90,41 @@ function hasValidResult(result: EventResult) {
   });
 
   return Boolean(results.length);
+}
+
+export function isEventSheetTitle(title: string) {
+  const t = title.toLowerCase();
+  return t !== "drivers" && t !== "config";
+}
+
+export type RegisteredDriver = { number: number; name: string };
+
+/**
+ * Drivers listed on the Drivers sheet who have at least one valid scored row
+ * (same rules as championship points) on any event sheet for the season.
+ */
+export async function getRegisteredDrivers(
+  sheetId: string,
+  ranges: string[],
+): Promise<RegisteredDriver[]> {
+  const eventRanges = ranges.filter(isEventSheetTitle);
+  const driversFromSheet = await getDrivers(sheetId);
+  const allEventResults = await Promise.all(
+    eventRanges.map((range) => getEventResults(sheetId, range)),
+  );
+  const scoredNames = new Set<string>();
+
+  for (const eventResults of allEventResults) {
+    for (const row of eventResults) {
+      if (hasValidResult(row)) {
+        scoredNames.add(row.name);
+      }
+    }
+  }
+
+  return driversFromSheet
+    .map((name, i) => ({ number: i + 1, name }))
+    .filter(({ name }) => name && scoredNames.has(name));
 }
 
 export async function getLeaderboard(
@@ -135,7 +170,7 @@ export async function getLeaderboard(
           drivers[i] === sortedResult[k].name &&
           hasValidResult(sortedResult[k])
         ) {
-          if (ranges[j].toUpperCase().endsWith(" (SS)")) {
+          if (ranges[j].toUpperCase().includes("(SS)")) {
             sealedPoints.push(
               Math.max(maxPoints - ((sortedResult[k].position || 0) - 1), 1),
             );
@@ -149,7 +184,7 @@ export async function getLeaderboard(
               parseInt(sortedResult[k].class),
               sealedClass,
             );
-          } else if (ranges[j].toUpperCase().endsWith(" (USS)")) {
+          } else if (ranges[j].toUpperCase().includes("(USS)")) {
             unsealedPoints.push(
               Math.max(maxPoints - ((sortedResult[k].position || 0) - 1), 1),
             );
